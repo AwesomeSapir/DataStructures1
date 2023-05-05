@@ -6,6 +6,7 @@ public:
     int n;
     int sum;
     int x;
+    ItemType* next;
 };
 
 #endif

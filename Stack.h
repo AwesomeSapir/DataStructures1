@@ -1,8 +1,17 @@
 #ifndef STACK
 #define STACK
 
-class Stack {
+#include "ItemType.h"
 
+class Stack {
+private:
+    ItemType* top;
+
+public:
+    bool isEmpty() {return top == nullptr; }
+    void makeEmpty();
+    void push(ItemType item);
+    ItemType pop();
 };
 
 #endif
