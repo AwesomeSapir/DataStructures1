@@ -5,10 +5,10 @@
 
 class Stack {
 private:
-    ItemType* top;
+    ItemType* top = nullptr;
 
 public:
-    bool isEmpty() {return top == nullptr; }
+    bool isEmpty() { return top == nullptr; }
     void makeEmpty();
     void push(ItemType item);
     ItemType pop();

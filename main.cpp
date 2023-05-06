@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <iomanip>
+#include "Stack.h"
 
 using namespace std;
 
@@ -29,6 +32,7 @@ void algRecursive(const vector<int>& arr, int n, int sum, int x){
                 cout << arr[n-1] << " " << x << endl;
             }
             algRecursive(arr, n-1, sum, x);
+            return;
         } else {
             algRecursive(arr, n-1, sum, arr[n-1]);
             algRecursive(arr, n-1, sum, 0);
@@ -36,14 +40,87 @@ void algRecursive(const vector<int>& arr, int n, int sum, int x){
     }
 }
 
+void algNonRecursive(const vector<int>& arr, int n, int sum){
+    Stack stack;
+    ItemType curr(n, 0, ItemType::START);
+    bool returnFromRec = false;
 
+    do {
+        if(returnFromRec){
+            curr = stack.pop();
+        }  else {
+            returnFromRec = true;
+        }
+        if(curr.line == ItemType::START){
+            if (curr.n == 1){
+                if (curr.x != 0){
+                    if (arr[0]+curr.x == sum){
+                        cout << arr[0] << " " << curr.x << endl;
+                        returnFromRec = true;
+                    }
+                } else {
+                    returnFromRec = true;
+                }
+            } else {
+                if (curr.x != 0){
+                    if (arr[curr.n-1]+curr.x == sum){
+                        cout << arr[curr.n-1] << " " << curr.x << endl;
+                    }
+                    curr.line = ItemType::AFTER_RETURN;
+                    stack.push(curr);
+                    curr.n = curr.n-1;
+                    curr.line = ItemType::START;
+                    returnFromRec = false;
+                } else {
+                    curr.line = ItemType::AFTER_REC;
+                    stack.push(curr);
+                    curr.n--;
+                    curr.x = arr[curr.n];
+                    curr.line = ItemType::START;
+                    returnFromRec = false;
+                }
+            }
+        } else if(curr.line == ItemType::AFTER_REC){
+            curr.line = ItemType::START;
+            stack.push(curr);
+            curr.n--;
+            curr.x = 0;
+            returnFromRec = false;
+        } else if(curr.line == ItemType::AFTER_RETURN){
+            returnFromRec = true;
+        }
+    } while (!stack.isEmpty());
+}
+
+void printTime(chrono::time_point<chrono::system_clock, chrono::system_clock::duration> start, chrono::time_point<chrono::system_clock, chrono::system_clock::duration> end){
+    double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    time_taken *= 1e-9;
+    cout << "Time taken by function <name-of-fun> is : " << fixed << time_taken << setprecision(9);
+    cout << " seconds" << endl;
+}
 
 int main() {
+    ios_base::sync_with_stdio(false);
+
     vector<int> arr = {1, 9, 7, 8, 9, 15};
     int sum = 16;
     cout << "iterative:" << endl;
+    auto start = chrono::high_resolution_clock::now();
     algIterative(arr, sum);
+    auto end = chrono::high_resolution_clock::now();
+    printTime(start, end);
+
     cout << "recursive:" << endl;
-    algRecursive(arr, arr.size(), sum, 0);
+    start = chrono::high_resolution_clock::now();
+    algRecursive(arr, (int)arr.size(), sum, 0);
+    end = chrono::high_resolution_clock::now();
+    printTime(start, end);
+
+    cout << "non-recursive:" << endl;
+    start = chrono::high_resolution_clock::now();
+    algNonRecursive(arr, (int)arr.size(), sum);
+    end = chrono::high_resolution_clock::now();
+    printTime(start, end);
+
     return 0;
 }

@@ -3,10 +3,18 @@
 
 class ItemType {
 public:
+    enum Line{
+        START, AFTER_RETURN, AFTER_REC
+    };
+
     int n;
-    int sum;
     int x;
-    ItemType* next;
+    ItemType* next = nullptr;
+    Line line;
+
+    ItemType(int n, int x, Line line);
+
+
 };
 
 #endif
