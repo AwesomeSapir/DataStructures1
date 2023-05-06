@@ -40,9 +40,9 @@ void algRecursive(const vector<int>& arr, int n, int sum, int x){
     }
 }
 
-void algNonRecursive(const vector<int>& arr, int n, int sum){
+void algNonRecursive(const vector<int>& arr, int arrSize, int sum){
     Stack stack;
-    ItemType curr(n, 0, ItemType::START);
+    ItemType curr(arrSize, 0, ItemType::START);
     bool returnFromRec = false;
 
     do {
@@ -50,39 +50,35 @@ void algNonRecursive(const vector<int>& arr, int n, int sum){
             curr = stack.pop();
         }
         if(curr.line == ItemType::START){
-            if (curr.n == 1){
-                if (curr.x != 0){
-                    if (arr[0]+curr.x == sum){
-                        cout << arr[0] << " " << curr.x << endl;
+            if (curr.index == 1){
+                if (curr.compared != 0){
+                    if (arr[0]+curr.compared == sum){
+                        cout << arr[0] << " " << curr.compared << endl;
                     }
-                    returnFromRec = true;
-                } else {
-                    returnFromRec = true;
                 }
+                returnFromRec = true;
             } else {
-                if (curr.x != 0){
-                    if (arr[curr.n-1]+curr.x == sum){
-                        cout << arr[curr.n-1] << " " << curr.x << endl;
+                if (curr.compared != 0){
+                    if (arr[curr.index - 1] + curr.compared == sum){
+                        cout << arr[curr.index - 1] << " " << curr.compared << endl;
                     }
                     curr.line = ItemType::AFTER_RETURN;
                     stack.push(curr);
-                    curr.n = curr.n-1;
-                    curr.line = ItemType::START;
-                    returnFromRec = false;
+                    curr.index = curr.index - 1;
                 } else {
                     curr.line = ItemType::AFTER_REC;
                     stack.push(curr);
-                    curr.n--;
-                    curr.x = arr[curr.n];
-                    curr.line = ItemType::START;
-                    returnFromRec = false;
+                    curr.index--;
+                    curr.compared = arr[curr.index];
                 }
+                curr.line = ItemType::START;
+                returnFromRec = false;
             }
         } else if(curr.line == ItemType::AFTER_REC){
             curr.line = ItemType::AFTER_RETURN;
             stack.push(curr);
-            curr.n--;
-            curr.x = 0;
+            curr.index--;
+            curr.compared = 0;
             curr.line = ItemType::START;
             returnFromRec = false;
         } else if(curr.line == ItemType::AFTER_RETURN){
@@ -94,18 +90,27 @@ void algNonRecursive(const vector<int>& arr, int n, int sum){
 void printTime(chrono::time_point<chrono::system_clock, chrono::system_clock::duration> start, chrono::time_point<chrono::system_clock, chrono::system_clock::duration> end){
     double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     time_taken *= 1e-9;
-    cout << fixed << time_taken << setprecision(2);
+    cout << fixed << time_taken << setprecision(9);
     cout << " seconds" << endl;
 }
 
-vector<int> getUserInput(int& o_sum){
+vector<int> getUserInput(int& o_sum) noexcept(false){
     int arrSize;
     cin >> arrSize;
+    if(arrSize <= 0){
+        throw invalid_argument("wrong input");
+    }
     vector<int> arr(arrSize);
     for (int i = 0; i < arrSize; i++) {
         cin >> arr[i];
+        if(arr[i] <= 0){
+            throw invalid_argument("wrong input");
+        }
     }
     cin >> o_sum;
+    if(o_sum <= 0){
+        throw invalid_argument("wrong input");
+    }
     return arr;
 }
 
@@ -113,8 +118,13 @@ int main() {
     ios_base::sync_with_stdio(false);
 
     int sum;
-    vector<int> arr = getUserInput(sum);
-
+    vector<int> arr;
+    try {
+        arr = getUserInput(sum);
+    } catch (invalid_argument& e) {
+        cout << e.what();
+        exit(1);
+    }
 
     cout << "Iterative algorithm:" << endl;
     auto start = chrono::high_resolution_clock::now();

@@ -1,5 +1,4 @@
-#ifndef ITEMTYPE
-#define ITEMTYPE
+#pragma once
 
 class ItemType {
 public:
@@ -7,14 +6,11 @@ public:
         START, AFTER_RETURN, AFTER_REC
     };
 
-    int n;
-    int x;
+    int index;
+    int compared;
     ItemType* next = nullptr;
     Line line;
 
     ItemType(int n, int x, Line line);
 
-
 };
-
-#endif

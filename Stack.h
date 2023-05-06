@@ -1,5 +1,4 @@
-#ifndef STACK
-#define STACK
+#pragma once
 
 #include "ItemType.h"
 
@@ -13,5 +12,3 @@ public:
     void push(ItemType item);
     ItemType pop();
 };
-
-#endif
