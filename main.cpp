@@ -48,16 +48,14 @@ void algNonRecursive(const vector<int>& arr, int n, int sum){
     do {
         if(returnFromRec){
             curr = stack.pop();
-        }  else {
-            returnFromRec = true;
         }
         if(curr.line == ItemType::START){
             if (curr.n == 1){
                 if (curr.x != 0){
                     if (arr[0]+curr.x == sum){
                         cout << arr[0] << " " << curr.x << endl;
-                        returnFromRec = true;
                     }
+                    returnFromRec = true;
                 } else {
                     returnFromRec = true;
                 }
@@ -81,10 +79,11 @@ void algNonRecursive(const vector<int>& arr, int n, int sum){
                 }
             }
         } else if(curr.line == ItemType::AFTER_REC){
-            curr.line = ItemType::START;
+            curr.line = ItemType::AFTER_RETURN;
             stack.push(curr);
             curr.n--;
             curr.x = 0;
+            curr.line = ItemType::START;
             returnFromRec = false;
         } else if(curr.line == ItemType::AFTER_RETURN){
             returnFromRec = true;
@@ -95,28 +94,41 @@ void algNonRecursive(const vector<int>& arr, int n, int sum){
 void printTime(chrono::time_point<chrono::system_clock, chrono::system_clock::duration> start, chrono::time_point<chrono::system_clock, chrono::system_clock::duration> end){
     double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     time_taken *= 1e-9;
-    cout << "Time taken by function <name-of-fun> is : " << fixed << time_taken << setprecision(9);
+    cout << fixed << time_taken << setprecision(2);
     cout << " seconds" << endl;
+}
+
+vector<int> getUserInput(int& o_sum){
+    int arrSize;
+    cin >> arrSize;
+    vector<int> arr(arrSize);
+    for (int i = 0; i < arrSize; i++) {
+        cin >> arr[i];
+    }
+    cin >> o_sum;
+    return arr;
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
 
-    vector<int> arr = {1, 9, 7, 8, 9, 15};
-    int sum = 16;
-    cout << "iterative:" << endl;
+    int sum;
+    vector<int> arr = getUserInput(sum);
+
+
+    cout << "Iterative algorithm:" << endl;
     auto start = chrono::high_resolution_clock::now();
     algIterative(arr, sum);
     auto end = chrono::high_resolution_clock::now();
     printTime(start, end);
 
-    cout << "recursive:" << endl;
+    cout << "Recursive algorithm (recursive version):" << endl;
     start = chrono::high_resolution_clock::now();
     algRecursive(arr, (int)arr.size(), sum, 0);
     end = chrono::high_resolution_clock::now();
     printTime(start, end);
 
-    cout << "non-recursive:" << endl;
+    cout << "Recursive algorithm (iterative version):" << endl;
     start = chrono::high_resolution_clock::now();
     algNonRecursive(arr, (int)arr.size(), sum);
     end = chrono::high_resolution_clock::now();
